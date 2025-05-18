@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignments - StudentHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 page-transition">
+    <div class="flex flex-col md:flex-row justify-between items-start mb-8">
+        <div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Assignments</h1>
+            <p class="text-[var(--text-secondary)]">
+                {% if is_instructor %}
+                    Manage and grade assignments for your courses
+                {% else %}
+                    View and submit assignments for your enrolled courses
+                {% endif %}
+            </p>
+        </div>
+        
+        {% if is_instructor %}
+            <div class="mt-4 md:mt-0">                <button id="course-selector" class="inline-flex items-center px-4 py-2 border border-[var(--border-color)] rounded-md shadow-sm bg-[var(--bg-secondary)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                    Create Assignment
+                </button>
+                <div id="course-dropdown" class="hidden absolute z-10 mt-1 w-56 rounded-md shadow-lg bg-[var(--bg-secondary)] ring-1 ring-black ring-opacity-5 divide-y divide-[var(--border-color)]">
+                    <div class="py-1">
+                        <p class="px-4 py-2 text-sm text-[var(--text-secondary)]">Select a course:</p>
+                    </div>
+                    <div class="py-1">
+                        {% for course in courses %}
+                            <a href="{% url 'learning:create_assignment' course.id %}" class="block px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-primary)]">
+                                {{ course.title }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Status filter tabs -->
+    <div class="mb-6 border-b border-[var(--border-color)]">
+        <nav class="-mb-px flex space-x-8">
+            <button class="filter-btn active text-[var(--neon-blue)] border-b-2 border-[var(--neon-blue)] py-2 px-1" data-filter="all">
+                All Assignments
+            </button>
+            <button class="filter-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2 px-1" data-filter="upcoming">
+                Upcoming
+            </button>
+            <button class="filter-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2 px-1" data-filter="submitted">
+                Submitted
+            </button>
+            <button class="filter-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2 px-1" data-filter="graded">
+                Graded
+            </button>
+            <button class="filter-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2 px-1" data-filter="late">
+                Past Due
+            </button>
+        </nav>
+    </div>
+    
+    <!-- Assignments list -->
+    <div class="space-y-6">
+        {% if assignments %}
+            {% for assignment in assignments %}
+                <div class="assignment-card bg-[var(--bg-secondary)] rounded-xl p-6 shadow-md neon-card flex flex-col md:flex-row justify-between relative overflow-hidden" 
+                     data-due="{{ assignment.due_date|date:'Y-m-d H:i' }}"
+                     data-status="{% if not is_instructor %}{{ assignment.submission_status|default:'Not Submitted'|lower }}{% else %}all{% endif %}">
+                    
+                    <!-- Course indicator ribbon -->
+                    <div class="absolute top-0 right-0">
+                        <div class="bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] text-white text-xs px-3 py-1 rounded-bl-md">
+                            {{ assignment.course.title }}
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 pr-4">
+                        <div class="flex items-center mb-3">
+                            <div class="flex-shrink-0 mr-3">
+                                {% if assignment.difficulty == 'beginner' %}
+                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                {% elif assignment.difficulty == 'intermediate' %}
+                                    <div class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                {% else %}
+                                    <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <h2 class="text-xl font-semibold text-[var(--text-primary)]">{{ assignment.title }}</h2>
+                        </div>
+                        
+                        <p class="text-[var(--text-secondary)] mb-3 line-clamp-2">{{ assignment.description|truncatechars:150 }}</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-primary)] text-[var(--text-primary)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Due: {{ assignment.due_date|date:"M d, Y" }}
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-primary)] text-[var(--text-primary)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                {{ assignment.total_points }} points
+                            </span>
+                            {% if assignment.module %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-primary)] text-[var(--text-primary)]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                    {{ assignment.module.title }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-64 flex flex-col items-center justify-center mt-4 md:mt-0">
+                        {% if not is_instructor %}
+                            {% if assignment.submission_status == 'submitted' %}
+                                <div class="text-center mb-3">
+                                    <div class="inline-block rounded-full bg-blue-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-[var(--text-secondary)] mt-1">Submitted</p>
+                                </div>
+                            {% elif assignment.submission_status == 'graded' %}
+                                <div class="text-center mb-3">
+                                    <div class="inline-block rounded-full bg-green-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-[var(--text-secondary)] mt-1">Graded: {{ assignment.submission_score }}/{{ assignment.total_points }}</p>
+                                </div>
+                            {% elif assignment.is_past_due %}
+                                <div class="text-center mb-3">
+                                    <div class="inline-block rounded-full bg-red-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-red-500 mt-1">Past Due</p>
+                                </div>
+                            {% else %}
+                                <div class="text-center mb-3">
+                                    <div class="inline-block rounded-full bg-yellow-100 p-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm text-[var(--text-secondary)] mt-1">Not Submitted</p>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center mb-3">
+                                <div class="rounded-lg bg-[var(--bg-primary)] px-3 py-2">
+                                    <span class="text-lg font-bold text-[var(--neon-blue)]">{{ assignment.submissions.count }}</span>
+                                    <span class="text-[var(--text-secondary)] text-sm">/{{ assignment.course.students.count }}</span>
+                                </div>
+                                <p class="text-sm text-[var(--text-secondary)] mt-1">Submissions</p>
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'learning:assignment_detail' assignment.id %}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                            {% if is_instructor %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                                Manage Assignment
+                            {% else %}
+                                {% if assignment.submission %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    View Submission
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Submit Assignment
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-12 bg-[var(--bg-secondary)] rounded-xl p-6 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-[var(--text-primary)]">No assignments found</h3>
+                <p class="mt-2 text-[var(--text-secondary)]">
+                    {% if is_instructor %}
+                        Create your first assignment to get started
+                    {% else %}
+                        You don't have any assignments yet
+                    {% endif %}
+                </p>                {% if is_instructor and courses %}
+                    <div class="mt-4">
+                        <label for="course-select" class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Select a course:</label>
+                        <select id="course-select" class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent mb-3">
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="create-assignment-btn" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Create New Assignment
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Course dropdown toggle for instructors
+        const courseSelector = document.getElementById('course-selector');
+        const courseDropdown = document.getElementById('course-dropdown');
+        
+        if (courseSelector) {
+            courseSelector.addEventListener('click', function() {
+                courseDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!courseSelector.contains(event.target) && !courseDropdown.contains(event.target)) {
+                    courseDropdown.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const assignmentCards = document.querySelectorAll('.assignment-card');
+        const now = new Date();
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active', 'text-[var(--neon-blue)]', 'border-b-2', 'border-[var(--neon-blue)]');
+                    btn.classList.add('text-[var(--text-secondary)]');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active', 'text-[var(--neon-blue)]', 'border-b-2', 'border-[var(--neon-blue)]');
+                this.classList.remove('text-[var(--text-secondary)]');
+                
+                const filter = this.getAttribute('data-filter');
+                
+                // Filter assignment cards
+                assignmentCards.forEach(card => {
+                    const dueDate = new Date(card.getAttribute('data-due'));
+                    const status = card.getAttribute('data-status');
+                    
+                    if (filter === 'all') {
+                        card.style.display = 'flex';
+                    } else if (filter === 'upcoming' && dueDate > now && status !== 'graded' && status !== 'submitted') {
+                        card.style.display = 'flex';
+                    } else if (filter === 'submitted' && status === 'submitted') {
+                        card.style.display = 'flex';
+                    } else if (filter === 'graded' && status === 'graded') {
+                        card.style.display = 'flex';
+                    } else if (filter === 'late' && dueDate < now && status !== 'graded' && status !== 'submitted') {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });    });
+    
+    // Handle create assignment button click
+    const createAssignmentBtn = document.getElementById('create-assignment-btn');
+    if (createAssignmentBtn) {
+        createAssignmentBtn.addEventListener('click', function() {
+            const courseSelect = document.getElementById('course-select');
+            const selectedCourseId = courseSelect.value;
+            if (selectedCourseId) {
+                window.location.href = "{% url 'learning:assignment_list' %}".replace('assignments/', '') + 
+                                        "course/" + selectedCourseId + "/assignments/create/";
+            }
+        });
+    }
+</script>
+
+<style>
+    .neon-card {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0.75rem;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        z-index: -1;
+        transform: scale(1.02);
+        filter: blur(15px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .neon-card:hover::after {
+        opacity: 0.15;
+    }
+    
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

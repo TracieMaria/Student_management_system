@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+
+{% block title %}Convert to Instructor Account - StudentHub{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* GitHub-inspired UI styles */
+    .github-container {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+    
+    .github-section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+    
+    .github-header {
+        background-color: var(--bg-primary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px;
+    }
+    
+    .github-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .github-body {
+        padding: 16px;
+    }
+    
+    .github-footer {
+        background-color: var(--bg-primary);
+        border-top: 1px solid var(--border-color);
+        padding: 16px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    
+    .feature-card {
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+        background-color: var(--bg-secondary);
+    }
+    
+    .feature-card:hover {
+        border-color: #0969da;
+        box-shadow: 0 1px 3px rgba(27,31,36,0.1);
+    }
+    
+    .github-button-primary {
+        background-color: #2da44e;
+        color: #ffffff;
+        border: 1px solid rgba(27,31,36,0.15);
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 5px 16px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .github-button-primary:hover {
+        background-color: #2c974b;
+    }
+    
+    .github-button-secondary {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 5px 16px;
+        transition: all 0.2s ease;
+    }
+    
+    .github-button-secondary:hover {
+        background-color: var(--bg-primary);
+        border-color: #0969da;
+    }
+    
+    .github-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        margin-right: 8px;
+    }
+    
+    .feature-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .feature-title {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--text-primary);
+        margin: 0;
+    }
+    
+    .feature-description {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    .feature-meta {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+    
+    .github-tag {
+        display: inline-block;
+        padding: 0 7px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        border-radius: 2em;
+        background-color: rgba(9,105,218,0.1);
+        color: #0969da;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 16px 0;
+    }
+    
+    .tab-container {
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 16px;
+    }
+    
+    .tab {
+        display: inline-block;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        border-bottom: 2px solid transparent;
+        color: var(--text-secondary);
+        margin-right: 8px;
+    }
+    
+    .tab.active {
+        border-bottom-color: #fd8c73;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    
+    .state-label {
+        display: inline-block;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 2em;
+        color: #ffffff;
+    }
+    
+    .state-label-open {
+        background-color: #2da44e;
+    }
+    
+    .state-label-attention {
+        background-color: #bf8700;
+    }
+    
+    .user-avatar {
+        border-radius: 50%;
+        overflow: hidden;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #0d1117;
+        color: #ffffff;
+        font-weight: 500;
+    }
+    
+    .info-box {
+        background-color: rgba(9,105,218,0.1);
+        border-left: 4px solid #0969da;
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+    
+    .attention-box {
+        background-color: #fff8c5;
+        border-left: 4px solid #bf8700;
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+    
+    .success-box {
+        background-color: #dafbe1;
+        border-left: 4px solid #2da44e;
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4">
+    <div class="github-container">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="github-icon">
+                    <path fill-rule="evenodd" d="M10.5 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm.061 3.073a4 4 0 10-5.123 0 6.004 6.004 0 00-3.431 5.142.75.75 0 001.498.07 4.5 4.5 0 018.99 0 .75.75 0 001.498-.07 6.005 6.005 0 00-3.432-5.142z"></path>
+                </svg>
+                <span class="text-sm text-[var(--text-secondary)] ml-2">Accounts</span>
+                <span class="text-sm text-[var(--text-secondary)] mx-1">/</span>
+                <span class="text-sm font-semibold">Convert Account</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Convert to Instructor Account</h1>
+            <p class="text-[var(--text-secondary)] mt-2">Upgrade your existing student account to access instructor features</p>
+        </div>
+        
+        <!-- Tab Navigation (GitHub-style) -->
+        <div class="tab-container">
+            <a href="{% url 'accounts:instructor_signup' %}" class="tab">Instructor Sign Up</a>
+            <div class="tab active">Convert Existing Account</div>
+            <a href="{% url 'accounts:login' %}" class="tab">Login</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Left Column: User information and conversion -->
+            <div class="md:col-span-1">
+                <div class="github-section">
+                    <div class="github-header">
+                        <h3 class="github-title">Account Details</h3>
+                    </div>
+                    <div class="github-body">
+                        <div class="flex items-start space-x-3 mb-4">
+                            <div class="user-avatar bg-[#0969da]">
+                                {{ user.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-[var(--text-primary)]">{{ user.username }}</h3>
+                                {% if user.email %}
+                                    <p class="text-sm text-[var(--text-secondary)]">{{ user.email }}</p>
+                                {% endif %}
+                                <div class="flex items-center mt-1">
+                                    <span class="inline-block w-2 h-2 rounded-full bg-[#2da44e] mr-1.5"></span>
+                                    <span class="text-xs text-[var(--text-secondary)]">Student Account</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="success-box">
+                            <div class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="github-icon mt-0.5" fill="#2da44e">
+                                    <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"></path>
+                                </svg>
+                                <span class="text-sm font-medium text-[#24292f]">Your account is eligible for upgrade</span>
+                            </div>
+                        </div>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <button type="submit" class="github-button-primary w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor" class="mr-1">
+                                    <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM4.5 7.5a.5.5 0 00.5.5h2v2a.5.5 0 00.5.5h1a.5.5 0 00.5-.5V8h2a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5H9V4a.5.5 0 00-.5-.5h-1a.5.5 0 00-.5.5v2H5a.5.5 0 00-.5.5v1z"></path>
+                                </svg>
+                                Upgrade to Instructor
+                            </button>
+                        </form>
+                    </div>
+                    <div class="github-footer">
+                        <a href="{% url 'accounts:dashboard' %}" class="inline-flex items-center text-[var(--text-secondary)] hover:text-[#0969da] text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="mr-1">
+                                <path d="M4.796 1.506a.75.75 0 1 0-1.116 1.003l5.137 5.705H1.397a.75.75 0 0 0 0 1.5h7.42l-5.137 5.704a.75.75 0 0 0 1.116 1.003l6.25-6.947a.75.75 0 0 0 0-1.022Z"></path>
+                            </svg>
+                            Return to dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="github-section mt-4">
+                    <div class="github-body">
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="github-icon mt-1" fill="#0969da">
+                                <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"></path>
+                            </svg>
+                            <div class="ml-2">
+                                <p class="text-sm text-[var(--text-secondary)]">
+                                    You'll keep all your current student features when you upgrade to an instructor account.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Feature Grid -->
+            <div class="md:col-span-2">
+                <div class="github-section">
+                    <div class="github-header">
+                        <h3 class="github-title">Instructor Features You'll Unlock</h3>
+                    </div>
+                    <div class="github-body">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Feature Card 1 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25ZM6.5 6.5v8h7.75a.25.25 0 0 0 .25-.25V6.5Zm8-1.5V1.75a.25.25 0 0 0-.25-.25H6.5V5Zm-13 1.5v7.75c0 .138.112.25.25.25H5v-8ZM5 5V1.5H1.75a.25.25 0 0 0-.25.25V5Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Course Dashboard</h4>
+                                </div>
+                                <p class="feature-description">Access a dedicated dashboard to manage all your courses, students, and teaching resources in one place.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Organization</div>
+                                    <div class="github-tag">Management</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feature Card 2 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M2 1.75C2 .784 2.784 0 3.75 0h8.5C13.216 0 14 .784 14 1.75v11.5a1.75 1.75 0 0 1-1.75 1.75h-8.5A1.75 1.75 0 0 1 2 13.25ZM3.75 1.5a.25.25 0 0 0-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25ZM8 10a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 10Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Course Creator</h4>
+                                </div>
+                                <p class="feature-description">Design and publish your own courses with multimedia content, assessments, and interactive elements.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Content</div>
+                                    <div class="github-tag">Publishing</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feature Card 3 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Analytics & Insights</h4>
+                                </div>
+                                <p class="feature-description">Track student progress, completion rates, and performance metrics with detailed analytics.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Data</div>
+                                    <div class="github-tag">Reports</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feature Card 4 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"></path><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Assessment Tools</h4>
+                                </div>
+                                <p class="feature-description">Create and grade quizzes, assignments, and exams with automatic scoring and feedback options.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Grading</div>
+                                    <div class="github-tag">Testing</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feature Card 5 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Student Communication</h4>
+                                </div>
+                                <p class="feature-description">Send announcements, respond to questions, and provide personalized feedback to students.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Messaging</div>
+                                    <div class="github-tag">Feedback</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feature Card 6 -->
+                            <div class="feature-card">
+                                <div class="feature-header">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" class="github-icon" fill="#0969da">
+                                        <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path>
+                                    </svg>
+                                    <h4 class="feature-title">Resource Library</h4>
+                                </div>
+                                <p class="feature-description">Create and manage a collection of educational resources, files, and materials for your courses.</p>
+                                <div class="feature-meta">
+                                    <div class="github-tag">Content</div>
+                                    <div class="github-tag">Files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="attention-box mt-4">
+                    <div class="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="github-icon mt-0.5" fill="#9a6700">
+                            <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm0-3a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm-.75-4.25a.75.75 0 0 0 1.5 0V4.75a.75.75 0 0 0-1.5 0v4Z"></path>
+                        </svg>
+                        <div class="ml-2">
+                            <p class="text-sm font-medium text-[#24292f] mb-1">Important note</p>
+                            <p class="text-sm text-[#24292f]">
+                                Converting your account to an instructor is a one-way process. While you'll retain all student features, you'll need administrator assistance to revert back to a student-only account if needed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

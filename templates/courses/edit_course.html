@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Course - {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Edit Course</h2>
+                    
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Course Title</label>
+                            <input type="text" 
+                                   name="title" 
+                                   class="form-control" 
+                                   id="title" 
+                                   required
+                                   value="{{ course.title }}"
+                                   placeholder="Enter course title">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Course Description</label>
+                            <textarea name="description" 
+                                      id="description" 
+                                      class="form-control" 
+                                      rows="5" 
+                                      required
+                                      placeholder="Describe your course...">{{ course.description }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="thumbnail" class="form-label">Course Thumbnail</label>
+                            <input type="file" 
+                                   name="thumbnail" 
+                                   class="form-control" 
+                                   id="thumbnail"
+                                   accept="image/*">
+                            <div class="form-text">
+                                Recommended size: 1200x600 pixels
+                                {% if course.thumbnail %}
+                                <br>Current thumbnail: {{ course.thumbnail.url }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Estimated Duration</label>
+                            <input type="text" 
+                                   name="duration" 
+                                   class="form-control" 
+                                   id="duration"
+                                   value="{{ course.duration }}"
+                                   placeholder="e.g., 6 weeks">
+                            <div class="form-text">
+                                Enter as "X weeks", "X days", or "X hours". Just a number will be interpreted as days.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox"
+                                   name="is_active"
+                                   id="is_active"
+                                   class="form-check-input"
+                                   {% if course.is_active %}checked{% endif %}>
+                            <label for="is_active" class="form-check-label">Active</label>
+                            <div class="form-text">
+                                Active courses are visible to students and available for enrollment.
+                            </div>
+                        </div>
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                Save Changes
+                            </button>
+                            <a href="{% url 'courses:instructor_course_list' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

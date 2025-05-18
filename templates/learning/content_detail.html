@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ content.title }} - {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Course Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'courses:detail' course.slug %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item"><a href="#module-{{ module.id }}">{{ module.title }}</a></li>
+            <li class="breadcrumb-item active">{{ content.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Content Area -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="mb-4">{{ content.title }}</h2>
+
+                    <!-- Content Display -->
+                    {% if content.content_type == 'video' %}
+                        {% if content.url %}
+                            <div class="ratio ratio-16x9 mb-4">
+                                <iframe src="{{ content.url }}" 
+                                        allowfullscreen 
+                                        class="rounded"></iframe>
+                            </div>
+                        {% elif content.file %}
+                            <video controls class="w-100 mb-4 rounded">
+                                <source src="{{ content.file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if content.content_type == 'text' %}
+                        <div class="content-text">
+                            {{ content.content|safe|linebreaks }}
+                        </div>
+                    {% endif %}
+
+                    {% if content.content_type == 'quiz' %}
+                        <form method="post" action="{% url 'learning:submit_quiz' quiz.id %}">
+                            {% csrf_token %}
+                            <div class="quiz-content">
+                                {{ content.content|safe }}
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-4">
+                                Submit Quiz
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    {% if content.file and content.content_type != 'video' %}
+                        <div class="mt-4">
+                            <a href="{{ content.file.url }}" 
+                               class="btn btn-outline-primary"
+                               target="_blank">
+                                <i class="bi bi-download"></i> Download Resource
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Progress Actions -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    {% if not progress.completed %}
+                        <form method="post" action="{% url 'learning:mark_complete' content.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Mark as Completed
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-success mb-0">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Completed on {{ progress.completion_date|date:"F j, Y" }}
+                            {% if progress.score %}
+                                <br>
+                                Score: {{ progress.score }}%
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Navigation -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Module Content</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for content_item in module.contents.all %}
+                    <a href="{% url 'learning:content_detail' content_item.id %}" 
+                       class="list-group-item list-group-item-action {% if content_item == content %}active{% endif %}">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                {% if content_item.content_type == 'video' %}
+                                    <i class="bi bi-play-circle me-2"></i>
+                                {% elif content_item.content_type == 'text' %}
+                                    <i class="bi bi-file-text me-2"></i>
+                                {% elif content_item.content_type == 'quiz' %}
+                                    <i class="bi bi-question-circle me-2"></i>
+                                {% else %}
+                                    <i class="bi bi-file-earmark me-2"></i>
+                                {% endif %}
+                                {{ content_item.title }}
+                            </div>
+                            {% for progress in content_item.student_progress.all %}
+                                {% if progress.student == user and progress.completed %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Progress Overview -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5>Your Progress</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ module_progress }}%">
+                            {{ module_progress }}%
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        {{ completed_items }} of {{ total_items }} items completed in this module
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load learning_extras %}
+
+{% block title %}Create Assignment - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 page-transition">
+    <div class="mb-8">
+        <a href="{% url 'learning:assignment_list' %}" class="inline-flex items-center text-[var(--text-secondary)] hover:text-[var(--neon-blue)]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Assignments
+        </a>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-start mb-8">
+        <div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Create Assignment</h1>
+            <p class="text-[var(--text-secondary)]">Course: {{ course.title }}</p>
+        </div>
+    </div>
+
+    <div class="bg-[var(--bg-secondary)] rounded-xl shadow-md neon-card p-6">
+        <form method="post" action="{% url 'learning:create_assignment' course.id %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-[var(--text-secondary)]">Assignment Title *</label>
+                    <div class="mt-1">
+                        <input type="text" name="title" id="title" required
+                            class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent">
+                    </div>
+                </div>
+                
+                <!-- Module (Optional) -->
+                <div>
+                    <label for="module" class="block text-sm font-medium text-[var(--text-secondary)]">Module (Optional)</label>
+                    <div class="mt-1">
+                        <select name="module" id="module"
+                            class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent">
+                            <option value="">Not assigned to a specific module</option>
+                            {% for module in modules %}
+                                <option value="{{ module.id }}">{{ module.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-[var(--text-secondary)]">Assignment Description *</label>
+                <div class="mt-1">
+                    <textarea name="description" id="description" rows="5" required
+                        class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent"></textarea>
+                </div>
+                <p class="mt-1 text-xs text-[var(--text-secondary)]">Describe the assignment, requirements, and grading criteria.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Due Date -->
+                <div>
+                    <label for="due_date" class="block text-sm font-medium text-[var(--text-secondary)]">Due Date *</label>
+                    <div class="mt-1">
+                        <input type="datetime-local" name="due_date" id="due_date" required
+                            class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent">
+                    </div>
+                </div>
+                
+                <!-- Total Points -->
+                <div>
+                    <label for="total_points" class="block text-sm font-medium text-[var(--text-secondary)]">Total Points</label>
+                    <div class="mt-1">
+                        <input type="number" name="total_points" id="total_points" value="100" min="1" max="1000"
+                            class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent">
+                    </div>
+                </div>
+                
+                <!-- Difficulty -->
+                <div>
+                    <label for="difficulty" class="block text-sm font-medium text-[var(--text-secondary)]">Difficulty</label>
+                    <div class="mt-1">
+                        <select name="difficulty" id="difficulty"
+                            class="block w-full px-4 py-2 bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-md focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate" selected>Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end">
+                <button type="submit" 
+                    class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)]">
+                    Create Assignment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

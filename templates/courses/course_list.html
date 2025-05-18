@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Courses - StudentHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 page-transition">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-[var(--text-primary)]">Browse Courses</h1>
+            <p class="text-[var(--text-secondary)]">Discover and enroll in our wide range of courses</p>
+        </div>
+        
+        <div class="mt-4 md:mt-0 flex space-x-4">
+            {% if user.profile.is_instructor %}
+            <a href="{% url 'courses:create_course' %}" class="px-4 py-2 rounded-lg text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Create Course
+            </a>
+            {% endif %}
+            
+            <div class="relative">
+                <input type="text" id="course-search" 
+                    class="pl-10 pr-4 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent"
+                    placeholder="Search courses...">
+                <div class="absolute left-3 top-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <select id="category-filter" 
+                    class="px-4 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent pr-10">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="absolute right-3 top-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if categories %}
+        <div class="mb-8 overflow-x-auto">
+            <div class="flex space-x-2 pb-2">
+                <button data-category="all" class="category-btn active px-4 py-2 rounded-full border border-[var(--border-color)] bg-[var(--neon-blue)] text-white hover:bg-[var(--neon-purple)] transition-all duration-300">
+                    All Categories
+                </button>
+                {% for category in categories %}
+                    <button data-category="{{ category.slug }}" class="category-btn px-4 py-2 rounded-full border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--neon-blue)] hover:text-white transition-all duration-300">
+                        {{ category.name }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- All Courses Section -->
+    <div>
+        {% if courses %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="courses-grid">
+                {% for course in courses %}
+                    <div class="course-card group" data-category="{{ course.category.slug|default:'' }}">
+                        <div class="bg-[var(--bg-secondary)] rounded-xl overflow-hidden shadow neon-card transition-all duration-300 hover:shadow-lg hover:scale-[1.02]">
+                            <div class="h-48 overflow-hidden relative">
+                                {% if course.image %}
+                                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                                {% elif course.thumbnail %}
+                                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-500">
+                                {% else %}
+                                    <div class="w-full h-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                                {% if course.is_published %}
+                                    <div class="absolute top-4 right-4 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                        Published
+                                    </div>
+                                {% else %}
+                                    <div class="absolute top-4 right-4 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                                        Coming Soon
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        {% if course.category %}
+                                            <span class="text-xs bg-[var(--bg-primary)] text-[var(--text-secondary)] px-2 py-1 rounded-full">{{ course.category.name }}</span>
+                                        {% endif %}
+                                        <h3 class="mt-2 text-xl font-bold text-[var(--text-primary)]">{{ course.title }}</h3>
+                                    </div>
+                                </div>
+                                <p class="mt-3 text-[var(--text-secondary)] line-clamp-2">{{ course.description|truncatechars:100 }}</p>
+                                
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            {% if course.instructor.profile.profile_picture %}
+                                                <img class="h-8 w-8 rounded-full" src="{{ course.instructor.profile.profile_picture.url }}" alt="{{ course.instructor.username }}">
+                                            {% else %}
+                                                <div class="h-8 w-8 rounded-full bg-[var(--neon-blue)] flex items-center justify-center text-white">
+                                                    {{ course.instructor.username|make_list|first|upper }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-2">
+                                            <p class="text-xs text-[var(--text-secondary)]">Instructor</p>
+                                            <p class="text-sm font-medium text-[var(--text-primary)]">{{ course.instructor.username }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--neon-blue)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="ml-1 text-sm text-[var(--text-secondary)]">
+                                            {{ course.duration }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--neon-purple)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                        <span class="ml-1 text-sm text-[var(--text-secondary)]">
+                                            {{ course.students.count }} students
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <a href="{% url 'courses:course_detail' course.slug %}" class="mt-4 block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                                    View Course
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12 bg-[var(--bg-secondary)] rounded-xl border border-dashed border-[var(--border-color)]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0v10l-8 4m-8-4V7m16 10l-8-4m0 0L4 13m8 4v-10" />
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-[var(--text-primary)]">No courses available</h3>
+                <p class="mt-2 text-[var(--text-secondary)]">Check back later for new courses.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category buttons functionality
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const courseCards = document.querySelectorAll('.course-card');
+        
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Remove active class from all buttons
+                categoryButtons.forEach(btn => btn.classList.remove('active', 'bg-[var(--neon-blue)]', 'text-white'));
+                categoryButtons.forEach(btn => btn.classList.add('text-[var(--text-primary)]'));
+                
+                // Add active class to clicked button
+                this.classList.add('active', 'bg-[var(--neon-blue)]', 'text-white');
+                this.classList.remove('text-[var(--text-primary)]');
+                
+                // Show/hide courses based on category
+                if (category === 'all') {
+                    courseCards.forEach(card => card.style.display = 'block');
+                } else {
+                    courseCards.forEach(card => {
+                        if (card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('course-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                courseCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Category filter dropdown
+        const categoryFilter = document.getElementById('category-filter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                const category = this.value;
+                
+                // Update the category buttons to reflect the selection
+                categoryButtons.forEach(btn => {
+                    if (btn.getAttribute('data-category') === category || 
+                        (btn.getAttribute('data-category') === 'all' && category === '')) {
+                        btn.click();
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

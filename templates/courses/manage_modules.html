@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Modules - {{ course.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Course Info Header -->
+    <div class="mb-4">
+        <h2>{{ course.title }}</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'courses:instructor_course_list' %}">My Courses</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'courses:detail' course.slug %}">{{ course.title }}</a></li>
+                <li class="breadcrumb-item active">Manage Modules</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <!-- Module List -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Course Modules</h4>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModuleModal">
+                        <i class="bi bi-plus-lg"></i> Add Module
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    {% if modules %}
+                        <div class="list-group list-group-flush module-list" id="moduleList">
+                            {% for module in modules %}
+                            <div class="list-group-item module-item" data-module-id="{{ module.id }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="mb-1">{{ module.title }}</h5>
+                                        <p class="mb-1 text-muted">{{ module.description|truncatewords:30 }}</p>
+                                        <small class="text-muted">
+                                            Order: {{ module.order }} | 
+                                            Content Items: {{ module.contents.count }}
+                                        </small>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary edit-module-btn"
+                                                data-module-id="{{ module.id }}"
+                                                data-module-title="{{ module.title }}"
+                                                data-module-description="{{ module.description }}"
+                                                data-module-order="{{ module.order }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editModuleModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a href="{% url 'learning:manage_content' course.slug module.id %}"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-collection"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">No modules added yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Overview -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4>Course Overview</h4>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Total Modules</small>
+                        <strong>{{ modules|length }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Enrolled Students</small>
+                        <strong>{{ course.enrolled_students.count }}</strong>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Last Updated</small>
+                        <strong>{{ course.updated_at|date:"F j, Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4>Module Guidelines</h4>
+                    <ul class="mb-0">
+                        <li>Order modules logically</li>
+                        <li>Keep module titles clear and concise</li>
+                        <li>Add detailed descriptions</li>
+                        <li>Include various content types</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Module Modal -->
+<div class="modal fade" id="addModuleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Module Title</label>
+                        <input type="text" name="title" id="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea name="description" id="description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="order" class="form-label">Order</label>
+                        <input type="number" name="order" id="order" class="form-control" 
+                               value="{{ modules|length|add:1 }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Module</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Module Modal -->
+<div class="modal fade" id="editModuleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_title" class="form-label">Module Title</label>
+                        <input type="text" name="title" id="edit_title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Description</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_order" class="form-label">Order</label>
+                        <input type="number" name="order" id="edit_order" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Enable drag and drop reordering of modules
+    const moduleList = document.getElementById('moduleList');
+    new Sortable(moduleList, {
+        animation: 150,
+        onEnd: function(evt) {
+            // Update module orders after drag and drop
+            const modules = Array.from(moduleList.children);
+            modules.forEach((module, index) => {
+                const moduleId = module.dataset.moduleId;
+                // Update order in database via AJAX
+                fetch(`/courses/module/${moduleId}/reorder/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ order: index + 1 })
+                });
+            });
+        }
+    });
+
+    // Populate edit module modal with current data
+    const editModuleModal = document.getElementById('editModuleModal');
+    editModuleModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const moduleId = button.dataset.moduleId;
+        const moduleTitle = button.dataset.moduleTitle;
+        const moduleDescription = button.dataset.moduleDescription;
+        const moduleOrder = button.dataset.moduleOrder;
+
+        const modal = this;
+        modal.querySelector('#edit_title').value = moduleTitle;
+        modal.querySelector('#edit_description').value = moduleDescription;
+        modal.querySelector('#edit_order').value = moduleOrder;
+        modal.querySelector('form').action = `/courses/module/${moduleId}/edit/`;
+    });
+</script>
+{% endblock %}

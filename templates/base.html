@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Management System{% endblock %}</title>    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="/static/js/csrf.js"></script>
+    {% block extra_head %}{% endblock %}
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #9d00ff;
+            --neon-pink: #ff00f2;
+            --neon-green: #00ff8f;
+        }
+        
+        /* Theme Variables */
+        .light {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border-color: rgba(27, 31, 36, 0.15);
+            --card-shadow: 0 3px 6px rgba(140, 149, 159, 0.15);
+        }
+          .dark {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border-color: rgba(240, 246, 252, 0.1);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+        
+        .neon-border {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .neon-hover:hover {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+        
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-primary);
+            transition: transform 0.5s ease;
+        }
+        
+        .theme-toggle:hover svg {
+            transform: rotate(180deg);
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            animation: loading 1s ease-in-out infinite;
+            z-index: 1000;
+        }
+        
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Page Transitions */
+        .page-transition {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Image Hover Effects */
+        .img-hover {
+            transition: transform 0.3s ease;
+        }
+        
+        .img-hover:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--neon-blue), var(--neon-purple));
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--neon-purple), var(--neon-blue));
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Loading Bar -->
+    <div class="loading"></div>
+      <!-- Navigation -->
+    <nav class="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-2xl font-bold gradient-text">StudentHub</a>
+                    </div>                    <div class="hidden sm:ml-8 sm:flex sm:space-x-8">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'accounts:dashboard' %}" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent hover:border-[var(--neon-blue)]">
+                                Dashboard
+                            </a>
+                            {% if user.profile.is_instructor %}
+                            <a href="/students" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent hover:border-[var(--neon-blue)]">
+                                My Students
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                        <a href="/courses" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent hover:border-[var(--neon-blue)]">
+                            Courses
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="/assignments" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent hover:border-[var(--neon-blue)]">
+                            Assignments
+                        </a>
+                        <a href="/grades" class="nav-link text-[var(--text-secondary)] hover:text-[var(--text-primary)] inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 border-transparent hover:border-[var(--neon-blue)]">
+                            Grades
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+                    <div class="relative">
+                        <button class="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)] transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <button class="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)] transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>                    {% if user.is_authenticated %}
+                        <div class="ml-3 relative">
+                            <div class="flex items-center space-x-4">                                <div class="relative inline-block">
+                                    <a href="{% url 'accounts:profile' %}" class="flex items-center space-x-2">
+                                        <div class="avatar h-8 w-8 text-xs">
+                                            {% if user.profile.profile_picture %}
+                                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="rounded-full h-8 w-8 object-cover">
+                                            {% else %}
+                                                <span>{{ user.username|make_list|first|upper }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <span class="text-[var(--text-primary)] font-medium hidden md:block">{{ user.username }}</span>
+                                    </a>
+                                </div>                                
+                                <form method="get" action="{% url 'accounts:logout' %}" class="inline-block">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors duration-300 text-sm">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors duration-300">Login</a>
+                        <a href="{% url 'accounts:register' %}" class="btn-neon px-4 py-2 rounded-md text-sm font-medium">Sign up</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile menu button -->
+                <div class="flex items-center sm:hidden">
+                    <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path id="close-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->        <div class="mobile-menu hidden sm:hidden border-t border-[var(--border-color)]">
+            <div class="pt-2 pb-4 space-y-1">
+                {% if user.is_authenticated %}
+                <a href="{% url 'accounts:dashboard' %}" class="block pl-3 pr-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Dashboard</a>
+                {% if user.profile.is_instructor %}
+                <a href="/students" class="block pl-3 pr-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">My Students</a>
+                {% endif %}
+                {% endif %}
+                <a href="/courses" class="block pl-3 pr-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Courses</a>
+                {% if user.is_authenticated %}
+                <a href="/grades" class="block pl-3 pr-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Grades</a>
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+                <div class="pt-4 pb-3 border-t border-[var(--border-color)]">
+                    <div class="flex items-center px-4">
+                        <div class="avatar h-9 w-9 mr-3">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="rounded-full">
+                            {% else %}
+                                <span>{{ user.username|make_list|first|upper }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="text-base font-medium text-[var(--text-primary)]">{{ user.username }}</div>
+                            <div class="text-sm font-medium text-[var(--text-secondary)]">{{ user.email }}</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 space-y-1">                        <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Your Profile</a>
+                        <a href="#" class="block px-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Settings</a>
+                        <form method="get" action="{% url 'accounts:logout' %}" class="block">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full text-left px-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="pt-2 pb-3 border-t border-[var(--border-color)]">
+                    <a href="{% url 'accounts:login' %}" class="block px-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="block px-4 py-2 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--neon-blue)] hover:bg-[var(--bg-primary)]">Sign up</a>
+                </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 page-transition">
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>    <!-- Footer -->
+    <footer class="bg-[var(--bg-secondary)] border-t border-[var(--border-color)] mt-12">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-1">
+                    <a href="/" class="inline-block text-xl font-bold gradient-text mb-4">StudentHub</a>
+                    <p class="mt-2 text-base text-[var(--text-secondary)]">
+                        Modern student management system for educational institutions.
+                    </p>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">
+                            <span class="sr-only">Twitter</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">
+                            <span class="sr-only">GitHub</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-[var(--text-secondary)] tracking-wider uppercase">Features</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Student Records</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Course Management</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Grade Tracking</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Attendance</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-[var(--text-secondary)] tracking-wider uppercase">Resources</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Documentation</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Support</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Tutorials</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">API</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-[var(--text-secondary)] tracking-wider uppercase">Legal</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Terms of Service</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Cookie Policy</a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-base text-[var(--text-secondary)] hover:text-[var(--neon-blue)] transition-colors">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-[var(--border-color)]">
+                <p class="text-center text-sm text-[var(--text-secondary)]">
+                    &copy; 2025 StudentHub. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    {% if debug %}
+    <script src="{% url 'django_browser_reload:reload' %}"></script>
+    {% endif %}    <script>
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            
+            if (html.classList.contains('light')) {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                body.classList.remove('light');
+                body.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+                
+                // Add some animation effect
+                const themeToggle = document.querySelector('.theme-toggle');
+                themeToggle.classList.add('rotate-animation');
+                setTimeout(() => {
+                    themeToggle.classList.remove('rotate-animation');
+                }, 500);
+            } else {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                body.classList.remove('dark');
+                body.classList.add('light');
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+                
+                // Add some animation effect
+                const themeToggle = document.querySelector('.theme-toggle');
+                themeToggle.classList.add('rotate-animation');
+                setTimeout(() => {
+                    themeToggle.classList.remove('rotate-animation');
+                }, 500);
+            }
+        }
+
+        // Check for saved theme preference
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme);
+            document.body.classList.add(savedTheme);
+            
+            if (savedTheme === 'dark') {
+                document.querySelector('.sun-icon').classList.add('hidden');
+                document.querySelector('.moon-icon').classList.remove('hidden');
+            }
+            
+            // Mobile menu toggle
+            const menuButton = document.querySelector('.mobile-menu-button');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            const closeIcon = document.getElementById('close-icon');
+            
+            if (menuButton) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    menuIcon.classList.toggle('hidden');
+                    closeIcon.classList.toggle('hidden');
+                });
+            }
+            
+            // Page Transition
+            document.body.classList.add('page-transition');
+            
+            // Initialize loading bar
+            const loadingBar = document.querySelector('.loading');
+            loadingBar.style.display = 'block';
+            setTimeout(() => {
+                loadingBar.style.display = 'none';
+            }, 1000);
+        });
+
+        // Loading Bar Animation for navigation
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            // Check if clicked element is a link that navigates within the site
+            if (target.tagName === 'A' && target.href && target.href.startsWith(window.location.origin)) {
+                document.querySelector('.loading').style.display = 'block';
+            }
+        });
+
+        // Loading Bar Animation for page unload
+        window.addEventListener('beforeunload', () => {
+            document.querySelector('.loading').style.display = 'block';
+        });
+    </script>
+    
+    <style>
+        .rotate-animation {
+            animation: rotate 0.5s ease;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html> 

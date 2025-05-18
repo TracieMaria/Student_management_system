@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}CSRF Verification Failed{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
+        <!-- Error Card -->
+        <div class="bg-[var(--bg-secondary)] p-8 rounded-2xl shadow-xl neon-card">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-red-500 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-[var(--text-primary)]">CSRF Verification Failed</h2>
+                <p class="text-sm text-[var(--text-secondary)] mt-1">{{ reason }}</p>
+            </div>
+            
+            <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
+                <h3 class="text-lg font-medium text-[var(--text-primary)] mb-2">Troubleshooting Steps:</h3>
+                <ul class="text-sm text-[var(--text-secondary)] list-disc list-inside space-y-2">
+                    <li>Make sure your browser accepts cookies</li>
+                    <li>Try refreshing the page before submitting the form</li>
+                    <li>Clear your browser cache and cookies</li>
+                    <li>Try using a different browser</li>
+                    {% if not has_cookie %}
+                    <li class="text-red-500 font-medium">CSRF cookie not detected in your browser!</li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="space-y-4">
+                <a href="javascript:history.back()" 
+                   class="group relative w-full flex justify-center py-3 px-4 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] font-medium hover:bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                    Go Back
+                </a>
+                
+                <a href="{% url 'accounts:register' %}" 
+                   class="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white font-medium bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                    Try Again
+                </a>
+            </div>
+            
+            <!-- Technical Details (Collapsible) -->
+            <div class="mt-6">
+                <button id="toggle-details" class="text-sm text-[var(--neon-blue)] hover:text-[var(--neon-purple)] transition-colors duration-300">
+                    Show Technical Details
+                </button>
+                <div id="technical-details" class="hidden mt-4 text-xs text-[var(--text-secondary)] p-4 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-color)]">
+                    <p><strong>Request Method:</strong> {{ request_method }}</p>
+                    <p><strong>CSRF Cookie Present:</strong> {{ has_cookie|yesno:"Yes,No" }}</p>
+                    <p><strong>Is AJAX:</strong> {{ is_ajax|yesno:"Yes,No" }}</p>
+                    <p><strong>Referer:</strong> {{ referer }}</p>
+                    <p class="mt-2">Your current CSRF token begins with: <code>{{ csrf_token|slice:":10" }}...</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('toggle-details').addEventListener('click', function() {
+        const details = document.getElementById('technical-details');
+        const isHidden = details.classList.contains('hidden');
+        
+        if (isHidden) {
+            details.classList.remove('hidden');
+            this.textContent = 'Hide Technical Details';
+        } else {
+            details.classList.add('hidden');
+            this.textContent = 'Show Technical Details';
+        }
+    });
+</script>
+{% endblock %}

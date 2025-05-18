@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - StudentHub{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col md:flex-row items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Left side with illustration -->
+    <div class="w-full md:w-1/2 max-w-md px-8 mb-10 md:mb-0 md:order-2">
+        <div class="text-center md:text-left animate-fade-in-up">
+            <h1 class="text-4xl font-bold gradient-text mb-4">Welcome Back</h1>
+            <p class="text-[var(--text-secondary)] text-lg mb-6">Sign in to continue managing your student records and courses</p>
+            
+            <!-- Login benefits -->
+            <div class="space-y-4 mb-8 hidden md:block">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-[var(--text-primary)]">Student Management</h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Organize and track student information</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-[var(--text-primary)]">Course Management</h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Create and manage course schedules</p>
+                    </div>
+                </div>
+            </div>
+              <div class="hidden md:block">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                     alt="Students studying" class="h-64 w-full object-cover rounded-lg mx-auto md:mx-0 shadow-lg">
+            </div>
+        </div>
+    </div>
+
+    <!-- Right side with form -->
+    <div class="w-full md:w-1/2 max-w-md md:order-1">
+        <!-- Login Form Card -->
+        <div class="bg-[var(--bg-secondary)] p-8 rounded-2xl shadow-xl neon-card">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-[var(--text-primary)]">Sign in to StudentHub</h2>
+                <p class="text-sm text-[var(--text-secondary)] mt-1">Access your dashboard and management tools</p>
+            </div>            <form class="space-y-6" method="POST" action="{% url 'accounts:login' %}">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+                    <p class="text-red-500 text-sm">Invalid login credentials. Please check your email and password and try again.</p>
+                </div>
+                {% endif %}
+
+                <div class="space-y-4">                    <div>
+                        <label for="id_username" class="block text-sm font-medium text-[var(--text-primary)]">Username</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                            </div>                            <input id="id_username" name="username" type="text" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Enter your username or email">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_password" class="block text-sm font-medium text-[var(--text-primary)]">Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input id="id_password" name="password" type="password" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Enter your password">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="id_remember" name="remember" type="checkbox" 
+                                class="h-4 w-4 rounded border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--neon-blue)] focus:ring-[var(--neon-blue)]">
+                            <label for="id_remember" class="ml-2 block text-sm text-[var(--text-secondary)]">
+                                Remember me
+                            </label>
+                        </div>                        <div class="text-sm">
+                            <a href="{% url 'accounts:password_reset' %}" class="font-medium text-[var(--neon-blue)] hover:text-[var(--neon-purple)] transition-colors duration-300">
+                                Forgot password?
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white font-medium bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transform hover:scale-105 transition-all duration-300">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-white/80 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                            </svg>
+                        </span>
+                        Sign in
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-[var(--border-color)]"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
+                            Don't have an account?
+                        </span>
+                    </div>
+                </div>                <div class="mt-6 grid grid-cols-1 gap-3">
+                    <a href="{% url 'accounts:register' %}" 
+                        class="w-full flex justify-center py-3 px-4 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] font-medium hover:bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transform hover:scale-105 transition-all duration-300">
+                        Create student account
+                    </a>
+                    <a href="{% url 'accounts:instructor_signup' %}" 
+                        class="w-full flex justify-center py-3 px-4 border border-[var(--neon-purple)] rounded-lg text-[var(--text-primary)] font-medium hover:bg-[var(--neon-purple)]/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-purple)] transform hover:scale-105 transition-all duration-300">
+                        Create instructor account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

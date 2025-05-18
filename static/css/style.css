@@ -1,0 +1,444 @@
+/* Main CSS styles for Student Management System 
+   Inspired by Neon.com and GitHub.com */
+
+:root {
+    /* Base Colors */
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --success-color: #059669;
+    --danger-color: #dc2626;
+    --warning-color: #d97706;
+    
+    /* Light Theme */
+    --light-bg: #f8fafc;
+    --light-bg-secondary: #ffffff;
+    --light-text: #1f2937;
+    --light-text-secondary: #6b7280;
+    --light-border: rgba(27, 31, 36, 0.15);
+    --light-card-shadow: 0 3px 6px rgba(140, 149, 159, 0.15);
+    
+    /* Dark Theme */
+    --dark-bg: #0d1117;
+    --dark-bg-secondary: #161b22;
+    --dark-text: #f0f6fc;
+    --dark-text-secondary: #8b949e;
+    --dark-border: rgba(240, 246, 252, 0.1);
+    --dark-card-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+    
+    /* Neon Accents */
+    --neon-blue: #00f2ff;
+    --neon-purple: #9d00ff;
+    --neon-pink: #ff00f2;
+    --neon-green: #00ff8f;
+    
+    /* Current Theme Variables - Will be updated by JS */
+    --bg-primary: var(--light-bg);
+    --bg-secondary: var(--light-bg-secondary);
+    --text-primary: var(--light-text);
+    --text-secondary: var(--light-text-secondary);
+    --border-color: var(--light-border);
+    --card-shadow: var(--light-card-shadow);
+}
+
+/* General Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+/* Theme Specific Styles */
+body.light {
+    --bg-primary: var(--light-bg);
+    --bg-secondary: var(--light-bg-secondary);
+    --text-primary: var(--light-text);
+    --text-secondary: var(--light-text-secondary);
+    --border-color: var(--light-border);
+    --card-shadow: var(--light-card-shadow);
+}
+
+body.dark {
+    --bg-primary: var(--dark-bg);
+    --bg-secondary: var(--dark-bg-secondary);
+    --text-primary: var(--dark-text);
+    --text-secondary: var(--dark-text-secondary);
+    --border-color: var(--dark-border);
+    --card-shadow: var(--dark-card-shadow);
+}
+
+/* Navigation */
+.navbar {
+    padding: 1rem 0;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    color: var(--primary-color) !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Cards */
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--bg-secondary);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 242, 255, 0.15);
+    border-color: rgba(0, 242, 255, 0.3);
+}
+
+.card.neon-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card.neon-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink), var(--neon-green));
+    transition: left 0.5s ease;
+}
+
+.card.neon-card:hover::before {
+    left: 0;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 8px rgba(0, 242, 255, 0.3);
+    color: var(--neon-blue);
+}
+
+.btn-neon {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    border: none;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 242, 255, 0.3);
+}
+
+.btn-neon:hover {
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 242, 255, 0.4);
+}
+
+/* Course Cards */
+.course-card {
+    height: 100%;
+}
+
+.course-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Progress Indicators */
+.progress {
+    height: 0.5rem;
+    border-radius: 1rem;
+    background-color: #e5e7eb;
+}
+
+.progress-bar {
+    background-color: var(--success-color);
+}
+
+/* Forms */
+.form-control {
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 0 3px rgba(0, 242, 255, 0.2);
+    outline: none;
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid transparent;
+    background-color: var(--bg-secondary);
+}
+
+.alert-success {
+    border-left-color: var(--success-color);
+}
+
+.alert-danger {
+    border-left-color: var(--danger-color);
+}
+
+.alert-warning {
+    border-left-color: var(--warning-color);
+}
+
+/* Footer */
+.footer {
+    background-color: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.footer a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer a:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+/* GitHub Style Header */
+.github-header {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+}
+
+/* Neon Borders */
+.neon-border {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.neon-border:hover {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+}
+
+/* Avatar */
+.avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Page Transitions */
+.page-transition {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+    transform: rotate(15deg);
+}
+
+/* Badge */
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-neon {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    color: white;
+}
+
+/* Progress bars */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--border-color);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    transition: width 0.5s ease;
+}
+
+/* Loading Indicator */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    animation: loading 1s ease-in-out infinite;
+    z-index: 1000;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--neon-blue), var(--neon-purple));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(var(--neon-purple), var(--neon-blue));
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+
+.tab-link {
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-link:hover {
+    color: var(--text-primary);
+}
+
+.tab-link.active {
+    color: var(--neon-blue);
+    border-bottom-color: var(--neon-blue);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .tab-nav {
+        padding-bottom: 0.5rem;
+    }
+    
+    .tab-link {
+        padding: 0.5rem 0.75rem;
+    }
+}

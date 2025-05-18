@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - StudentHub{% endblock %}
+
+{% block extra_head %}
+<script src="/static/js/signup-validation.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col md:flex-row items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <!-- Left side with form -->
+    <div class="w-full md:w-1/2 max-w-md mb-10 md:mb-0">
+        <!-- Signup Form Card -->
+        <div class="bg-[var(--bg-secondary)] p-8 rounded-2xl shadow-xl neon-card">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-[var(--text-primary)]">Create an Account</h2>
+                <p class="text-sm text-[var(--text-secondary)] mt-1">Join our student management platform</p>            </div>
+            <!-- CSRF Token Information for debugging -->
+            <div id="csrf-debug" class="hidden text-xs text-[var(--text-secondary)] mb-2">
+                CSRF Token Status: <span id="csrf-status">Checking...</span>
+            </div>
+            
+            <form id="signup-form" class="space-y-6" method="POST" action="{% url 'accounts:register' %}">
+                {% csrf_token %}
+                <input type="hidden" name="form_submitted" value="1">
+                
+                {% if form.errors %}
+                <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+                    <p class="text-red-500 text-sm">Please correct the errors below.</p>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ field.label }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="id_username" class="block text-sm font-medium text-[var(--text-primary)]">Username</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input id="id_username" name="username" type="text" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Choose a username">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="id_email" class="block text-sm font-medium text-[var(--text-primary)]">Email</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                </svg>
+                            </div>
+                            <input id="id_email" name="email" type="email" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Enter your email">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_password1" class="block text-sm font-medium text-[var(--text-primary)]">Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input id="id_password1" name="password1" type="password" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Create a password">
+                        </div>                        <p class="mt-1 text-xs text-[var(--text-secondary)]">
+                            You can use any password
+                        </p>
+                    </div>
+
+                    <div>
+                        <label for="id_password2" class="block text-sm font-medium text-[var(--text-primary)]">Confirm Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <input id="id_password2" name="password2" type="password" required 
+                                class="appearance-none block w-full pl-10 px-4 py-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--neon-blue)] focus:border-transparent transition-all duration-300"
+                                placeholder="Confirm your password">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="id_terms" name="terms" type="checkbox" required
+                            class="h-4 w-4 rounded border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--neon-blue)] focus:ring-[var(--neon-blue)]">
+                        <label for="id_terms" class="ml-2 block text-xs text-[var(--text-secondary)]">
+                            I agree to the <a href="#" class="text-[var(--neon-blue)] hover:text-[var(--neon-purple)] transition-colors duration-300">Terms of Service</a> and <a href="#" class="text-[var(--neon-blue)] hover:text-[var(--neon-purple)] transition-colors duration-300">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>                <div>
+                    <button type="submit" id="signup-submit-btn"
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent rounded-lg text-white font-medium bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transform hover:scale-105 transition-all duration-300">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-white/80 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                            </svg>
+                        </span>
+                        <span id="submit-text">Create Account</span>
+                        <span id="loading-spinner" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                    <p id="csrf-error" class="mt-2 text-xs text-red-500 hidden">CSRF verification failed. Please try refreshing the page.</p>
+                </div>
+            </form>
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-[var(--border-color)]"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
+                            Already have an account?
+                        </span>
+                    </div>
+                </div>                <div class="mt-6">
+                    <a href="{% url 'accounts:login' %}" 
+                        class="w-full flex justify-center py-3 px-4 border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] font-medium hover:bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transform hover:scale-105 transition-all duration-300">
+                        Sign in to your account
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right side with illustration -->
+    <div class="w-full md:w-1/2 max-w-md px-8">
+        <div class="text-center md:text-left animate-fade-in-up">
+            <h1 class="text-4xl font-bold gradient-text mb-4">Join StudentHub</h1>
+            <p class="text-[var(--text-secondary)] text-lg mb-6">Create an account to begin managing your student records and courses</p>
+            
+            <!-- Signup benefits -->
+            <div class="space-y-4 mb-8 hidden md:block">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-[var(--text-primary)]">Student Administration</h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Easily manage student enrollments and data</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-[var(--text-primary)]">Performance Tracking</h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Monitor grades and academic progress</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-[var(--text-primary)]">Secure Access</h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Role-based permissions and data protection</p>
+                    </div>
+                </div>
+            </div>            <div class="hidden md:block">
+                <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                     alt="Students studying" 
+                     class="h-64 w-full object-cover rounded-lg mx-auto md:mx-0 shadow-lg" 
+                     onerror="this.onerror=null; this.src='/media/profile_pics/izzy-gerosa-RgplfXbxLFs-unsplash.jpg'; console.log('Fallback image loaded');">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %} 

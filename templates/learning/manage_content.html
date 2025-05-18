@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Content - {{ module.title }} - EduLearn{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'courses:instructor_course_list' %}">My Courses</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'courses:detail' course.slug %}">{{ course.title }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'courses:manage_modules' course.slug %}">Modules</a></li>
+            <li class="breadcrumb-item active">{{ module.title }} - Content</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Content List -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Module Content</h4>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContentModal">
+                        <i class="bi bi-plus-lg"></i> Add Content
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    {% if contents %}
+                        <div class="list-group list-group-flush content-list" id="contentList">
+                            {% for content in contents %}
+                            <div class="list-group-item content-item" data-content-id="{{ content.id }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            {% if content.content_type == 'video' %}
+                                                <i class="bi bi-play-circle me-2"></i>
+                                            {% elif content.content_type == 'text' %}
+                                                <i class="bi bi-file-text me-2"></i>
+                                            {% elif content.content_type == 'quiz' %}
+                                                <i class="bi bi-question-circle me-2"></i>
+                                            {% else %}
+                                                <i class="bi bi-file-earmark me-2"></i>
+                                            {% endif %}
+                                            <h5 class="mb-0">{{ content.title }}</h5>
+                                        </div>
+                                        <p class="mb-1 text-muted">{{ content.content|truncatewords:30 }}</p>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-secondary me-2">{{ content.get_content_type_display }}</span>
+                                            <small class="text-muted">Order: {{ content.order }}</small>
+                                            {% if content.file %}
+                                                <small class="text-muted ms-2">
+                                                    <i class="bi bi-paperclip"></i> File attached
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary edit-content-btn"
+                                                data-content-id="{{ content.id }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editContentModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger delete-content-btn"
+                                                data-content-id="{{ content.id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">No content added yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Info -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4>Module Information</h4>
+                    <p>{{ module.description }}</p>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Content Items</small>
+                        <strong>{{ contents|length }}</strong>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Last Updated</small>
+                        <strong>{{ module.updated_at|date:"F j, Y" }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4>Content Guidelines</h4>
+                    <ul class="mb-0">
+                        <li>Keep content focused and concise</li>
+                        <li>Use appropriate content types</li>
+                        <li>Organize content logically</li>
+                        <li>Include multimedia when relevant</li>
+                        <li>Create engaging assessments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Content Modal -->
+<div class="modal fade" id="addContentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Content Title</label>
+                        <input type="text" name="title" id="title" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="content_type" class="form-label">Content Type</label>
+                        <select name="content_type" id="content_type" class="form-select" required>
+                            <option value="text">Text</option>
+                            <option value="video">Video</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="assignment">Assignment</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Content</label>
+                        <textarea name="content" id="content" class="form-control" rows="6" required></textarea>
+                        <div class="form-text content-help">
+                            Enter your content here. For videos, you can paste the embed URL.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="file" class="form-label">File Attachment (optional)</label>
+                        <input type="file" name="file" id="file" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="order" class="form-label">Order</label>
+                        <input type="number" name="order" id="order" class="form-control" 
+                               value="{{ contents|length|add:1 }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Content</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Content Modal -->
+<div class="modal fade" id="editContentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- Similar fields as Add Content Modal -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Enable drag and drop reordering of content
+    const contentList = document.getElementById('contentList');
+    new Sortable(contentList, {
+        animation: 150,
+        onEnd: function(evt) {
+            // Update content orders after drag and drop
+            const contents = Array.from(contentList.children);
+            contents.forEach((content, index) => {
+                const contentId = content.dataset.contentId;
+                // Update order in database via AJAX
+                fetch(`/learning/content/${contentId}/reorder/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ order: index + 1 })
+                });
+            });
+        }
+    });
+
+    // Update content help text based on selected content type
+    document.getElementById('content_type').addEventListener('change', function(e) {
+        const helpText = document.querySelector('.content-help');
+        switch(e.target.value) {
+            case 'video':
+                helpText.textContent = 'Enter the video embed URL or upload a video file.';
+                break;
+            case 'quiz':
+                helpText.textContent = 'Enter quiz questions and options in the specified format.';
+                break;
+            case 'assignment':
+                helpText.textContent = 'Enter assignment instructions and requirements.';
+                break;
+            default:
+                helpText.textContent = 'Enter your content here.';
+        }
+    });
+</script>
+{% endblock %}

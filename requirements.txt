@@ -1,0 +1,8 @@
+Django==5.2
+Pillow==10.0.0
+python-dotenv==1.0.0
+django-crispy-forms==2.1
+crispy-tailwind==0.5.0
+django-allauth==0.61.1
+django-tailwind==3.8.0
+django-browser-reload==1.12.1

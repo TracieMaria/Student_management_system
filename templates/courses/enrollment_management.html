@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Enrollment Management - StudentHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 page-transition">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[var(--text-primary)] gradient-text">Enrollment Management</h1>
+        <p class="text-[var(--text-secondary)] mt-2">
+            {% if is_instructor %}
+                Manage student enrollments for your courses
+            {% else %}
+                Manage your course enrollments
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- Main Content -->
+    {% if is_instructor %}
+        <!-- Instructor View -->
+        {% if course_enrollments %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for enrollment in course_enrollments %}
+                    <div class="bg-[var(--bg-secondary)] rounded-xl shadow-md neon-card overflow-hidden">
+                        <div class="p-6 border-b border-[var(--border-color)]">
+                            <h2 class="text-xl font-bold text-[var(--text-primary)] mb-1">{{ enrollment.course.title }}</h2>
+                            <div class="flex items-center text-[var(--text-secondary)] text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                                </svg>
+                                <span>{{ enrollment.student_count }} students enrolled</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            {% if enrollment.students %}
+                                <div class="flex -space-x-2 overflow-hidden mb-4">
+                                    {% for student in enrollment.students|slice:":5" %}
+                                        {% if student.profile.profile_picture %}
+                                            <img class="inline-block h-8 w-8 rounded-full ring-2 ring-[var(--bg-secondary)]" src="{{ student.profile.profile_picture.url }}" alt="{{ student.username }}">
+                                        {% else %}
+                                            <div class="inline-block h-8 w-8 rounded-full ring-2 ring-[var(--bg-secondary)] bg-[var(--neon-blue)] flex items-center justify-center text-white text-xs font-medium">
+                                                {{ student.username|make_list|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if enrollment.student_count > 5 %}
+                                        <div class="inline-block h-8 w-8 rounded-full ring-2 ring-[var(--bg-secondary)] bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-primary)] text-xs font-medium">
+                                            +{{ enrollment.student_count|add:"-5" }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <a href="{% url 'courses:course_enrollments' course_id=enrollment.course.id %}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                                    Manage Enrollments
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-[var(--bg-secondary)] rounded-xl shadow-md neon-card p-6 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-[var(--text-primary)]">No Courses Found</h3>
+                <p class="mt-2 text-[var(--text-secondary)]">You haven't created any courses yet.</p>
+                <a href="{% url 'courses:create_course' %}" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                    Create a Course
+                </a>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Student View -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+                <div class="bg-[var(--bg-secondary)] rounded-xl shadow-md neon-card overflow-hidden">
+                    <div class="border-b border-[var(--border-color)] p-6">
+                        <h2 class="text-xl font-bold text-[var(--text-primary)]">Your Enrolled Courses</h2>
+                    </div>
+                    
+                    {% if enrolled_courses %}
+                        <ul class="divide-y divide-[var(--border-color)]">
+                            {% for course in enrolled_courses %}
+                                <li class="p-6">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-12 w-12 mr-4">
+                                                {% if course.image %}
+                                                    <img class="h-12 w-12 rounded-md object-cover" src="{{ course.image.url }}" alt="{{ course.title }}">
+                                                {% elif course.thumbnail %}
+                                                    <img class="h-12 w-12 rounded-md object-cover" src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                                                {% else %}
+                                                    <div class="h-12 w-12 rounded-md bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center text-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                        </svg>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'courses:course_detail' slug=course.slug %}" class="text-lg font-medium text-[var(--text-primary)] hover:text-[var(--neon-blue)]">{{ course.title }}</a>
+                                                {% if course.instructor %}
+                                                    <p class="text-sm text-[var(--text-secondary)]">Instructor: {{ course.instructor.username }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <a href="{% url 'courses:course_content' course_slug=course.slug module_id=course.modules.first.id %}" class="mr-2 p-2 rounded-full text-[var(--neon-blue)] hover:bg-[var(--neon-blue)] hover:bg-opacity-10 transition-colors duration-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                                </svg>
+                                            </a>
+                                            <form action="{% url 'courses:unenroll_student' course_id=course.id student_id=request.user.id %}" method="post" class="inline-block">
+                                                {% csrf_token %}
+                                                <button type="submit" class="p-2 rounded-full text-red-500 hover:bg-red-100 transition-colors duration-200" onclick="return confirm('Are you sure you want to unenroll from this course?');">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            <h3 class="mt-4 text-lg font-medium text-[var(--text-primary)]">No Enrolled Courses</h3>
+                            <p class="mt-2 text-[var(--text-secondary)]">You're not enrolled in any courses yet.</p>
+                            <a href="{% url 'courses:course_list' %}" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] hover:from-[var(--neon-purple)] hover:to-[var(--neon-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--neon-blue)] transition-all duration-300">
+                                Browse Courses
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+                <div class="bg-[var(--bg-secondary)] rounded-xl shadow-md neon-card overflow-hidden">
+                    <div class="border-b border-[var(--border-color)] p-6">
+                        <h2 class="text-xl font-bold text-[var(--text-primary)]">Available Courses</h2>
+                    </div>
+                    
+                    {% if available_courses %}
+                        <ul class="divide-y divide-[var(--border-color)]">
+                            {% for course in available_courses %}
+                                <li class="p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 mr-3">
+                                                {% if course.image %}
+                                                    <img class="h-10 w-10 rounded-md object-cover" src="{{ course.image.url }}" alt="{{ course.title }}">
+                                                {% elif course.thumbnail %}
+                                                    <img class="h-10 w-10 rounded-md object-cover" src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                                                {% else %}
+                                                    <div class="h-10 w-10 rounded-md bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center text-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                        </svg>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'courses:course_detail' slug=course.slug %}" class="font-medium text-[var(--text-primary)] hover:text-[var(--neon-blue)]">{{ course.title }}</a>
+                                                {% if course.category %}
+                                                    <p class="text-xs text-[var(--text-secondary)]">{{ course.category.name }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <a href="{% url 'courses:enroll_course' slug=course.slug %}" class="px-2 py-1 text-xs rounded-md text-[var(--neon-blue)] border border-[var(--neon-blue)] hover:bg-[var(--neon-blue)] hover:text-white transition-all duration-300">
+                                            Enroll
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="p-4 text-center">
+                            <a href="{% url 'courses:course_list' %}" class="text-[var(--neon-blue)] hover:text-[var(--neon-purple)] text-sm">
+                                Browse all courses →
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <p class="text-[var(--text-secondary)]">No additional courses available.</p>
+                            <p class="mt-2 text-sm text-[var(--text-secondary)]">You're enrolled in all available courses.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .neon-card {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0.75rem;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        z-index: -1;
+        transform: scale(1.02);
+        filter: blur(15px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .neon-card:hover::after {
+        opacity: 0.15;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Instructor Dashboard - StudentHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 page-transition">
+    <!-- Dashboard header with greeting -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-[var(--text-primary)]">Instructor Dashboard</h1>
+                <p class="text-[var(--text-secondary)]">Manage your courses and students</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <a href="{% url 'accounts:profile' %}" class="px-4 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--neon-blue)] hover:text-white transition-all duration-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                    </svg>
+                    View Profile
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Courses Card -->
+        <div class="bg-[var(--bg-secondary)] p-6 rounded-xl shadow neon-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Total Courses</h3>
+                    <p class="mt-2 text-3xl font-bold text-[var(--text-primary)]">{{ courses_count }}</p>
+                </div>
+                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[var(--neon-blue)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Students Card -->
+        <div class="bg-[var(--bg-secondary)] p-6 rounded-xl shadow neon-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Total Students</h3>
+                    <p class="mt-2 text-3xl font-bold text-[var(--text-primary)]">{{ students_count|default:0 }}</p>
+                </div>
+                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[var(--neon-green)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Average Grade Card -->
+        <div class="bg-[var(--bg-secondary)] p-6 rounded-xl shadow neon-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Average Grade</h3>
+                    <p class="mt-2 text-3xl font-bold text-[var(--text-primary)]">--</p>
+                </div>
+                <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[var(--neon-purple)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Courses Section -->
+        <div class="lg:col-span-2">
+            <div class="bg-[var(--bg-secondary)] rounded-xl shadow neon-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)]">My Courses</h2>
+                    <a href="#" class="text-sm text-[var(--neon-blue)] hover:text-[var(--neon-purple)] transition-colors duration-300 flex items-center">
+                        <span>Add New Course</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+                
+                {% if courses %}
+                    <div class="space-y-4">
+                        {% for course in courses %}
+                            <div class="flex flex-col md:flex-row border border-[var(--border-color)] rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
+                                {% if course.image %}
+                                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="h-32 w-full md:w-48 object-cover">
+                                {% else %}
+                                    <div class="h-32 w-full md:w-48 bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between">
+                                        <h3 class="text-lg font-semibold text-[var(--text-primary)]">{{ course.title }}</h3>
+                                        <span class="px-2 py-1 text-xs rounded-full {% if course.is_published %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {% if course.is_published %}Published{% else %}Draft{% endif %}
+                                        </span>
+                                    </div>
+                                    <p class="text-[var(--text-secondary)] text-sm mt-2 line-clamp-2">{{ course.description|truncatechars:100 }}</p>
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-secondary)]" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                                            </svg>
+                                            <span class="ml-1 text-xs text-[var(--text-secondary)]">{{ course.students.count }} students</span>
+                                        </div>
+                                        <a href="#" class="text-[var(--neon-blue)] hover:text-[var(--neon-purple)] text-sm">Manage →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="p-8 text-center border border-dashed border-[var(--border-color)] rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-[var(--text-primary)]">No courses yet</h3>
+                        <p class="mt-2 text-[var(--text-secondary)]">Start creating your first course to begin teaching.</p>
+                        <a href="#" class="mt-4 inline-block px-4 py-2 bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] text-white rounded-lg">Create New Course</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Activity & Recent Students -->
+        <div>
+            <!-- Recent Activity -->
+            <div class="bg-[var(--bg-secondary)] rounded-xl shadow neon-card p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 text-[var(--text-primary)]">Recent Activity</h2>
+                
+                <div class="space-y-4">
+                    <div class="border-l-4 border-[var(--neon-blue)] pl-4">
+                        <p class="text-sm text-[var(--text-secondary)]">Today</p>
+                        <p class="text-[var(--text-primary)]">2 new students enrolled in Python Basics</p>
+                    </div>
+                    
+                    <div class="border-l-4 border-[var(--neon-green)] pl-4">
+                        <p class="text-sm text-[var(--text-secondary)]">Yesterday</p>
+                        <p class="text-[var(--text-primary)]">You published Web Development course</p>
+                    </div>
+                    
+                    <div class="border-l-4 border-[var(--neon-purple)] pl-4">
+                        <p class="text-sm text-[var(--text-secondary)]">3 days ago</p>
+                        <p class="text-[var(--text-primary)]">You added new module to Django Framework</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Tasks -->
+            <div class="bg-[var(--bg-secondary)] rounded-xl shadow neon-card p-6">
+                <h2 class="text-xl font-bold mb-4 text-[var(--text-primary)]">Upcoming Tasks</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="mr-4">
+                            <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                <span class="text-red-600 font-medium">!</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-[var(--text-primary)] font-medium">Grade assignments</h4>
+                            <p class="text-sm text-[var(--text-secondary)]">Django Framework - 5 pending</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div class="mr-4">
+                            <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                                <span class="text-orange-600 font-medium">2d</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-[var(--text-primary)] font-medium">Create quiz</h4>
+                            <p class="text-sm text-[var(--text-secondary)]">Python Basics - Module 4</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .neon-card {
+        position: relative;
+    }
+    
+    .neon-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0.75rem;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        z-index: -1;
+        transform: scale(1.01);
+        filter: blur(8px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .neon-card:hover::after {
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}
