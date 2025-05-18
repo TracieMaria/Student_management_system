@@ -1,4 +1,4 @@
-# Tracy's E-Learning System Documentation
+# Tracy's E-Learning System Documentation django project
 
 This comprehensive documentation provides everything you need to understand, use, develop, and deploy the Tracy E-Learning System.
 
